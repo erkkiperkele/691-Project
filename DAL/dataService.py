@@ -1,11 +1,11 @@
 from pydrill.client import PyDrill
 
-from DAL import QueryDictionary
+from DAL import queryDictionary
 
 
 class DataService:
     __drill = None
-    __queryDictionary = QueryDictionary.QueryDictionary
+    __queryDictionary = queryDictionary.QueryDictionary
 
     def init_drill_connection(self):
         self.__drill = PyDrill(host='localhost')

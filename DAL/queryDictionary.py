@@ -1,5 +1,4 @@
 class QueryDictionary:
-
     @staticmethod
     def get_yelp_elite_query():
         yelp_elite = '''
@@ -8,7 +7,6 @@ class QueryDictionary:
          WHERE elite[0] IS NOT NULL  LIMIT 200
         '''
         return yelp_elite
-
 
     @staticmethod
     def get_yelp_elite_count_query():
