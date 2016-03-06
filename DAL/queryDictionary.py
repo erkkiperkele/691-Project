@@ -2,6 +2,7 @@ class QueryDictionary:
     """
     This class contains the base queries for the yelp dataset
     :__dataPath: the root folder for the yelp dataset json files
+    :__tables: a dictionary of named arguments for each json file (table) to be passed to the queries
     """
     __dataPath = '''`dfs.root`.`./Users/Aymeric/apache-drill-1.5.0/YelpDataSet/'''
 
