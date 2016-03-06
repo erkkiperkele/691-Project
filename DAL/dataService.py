@@ -5,7 +5,7 @@ from DAL import queryDictionary
 
 class DataService:
     __drill = None
-    __queryDictionary = queryDictionary.QueryDictionary
+    __dictionary = queryDictionary.QueryDictionary
 
     def init_drill_connection(self):
         self.__drill = PyDrill(host='localhost')
@@ -21,7 +21,7 @@ class DataService:
                 ''')
 
     def get_yelp_elite(self):
-        yelp_elite_query = self.__queryDictionary.get_yelp_elite_query()
+        yelp_elite_query = self.__dictionary.get_yelp_elite_query()
         yelp_elite = self.__drill.query(yelp_elite_query)
         self.print_header("elite members")
         for result in yelp_elite:
