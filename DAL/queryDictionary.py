@@ -56,3 +56,27 @@ class QueryDictionary:
                 LIMIT 50000
         '''.format(**cls.__tables)
         return yelp_elite
+
+    @classmethod
+    def get_restaurant_reviews(cls):
+
+        yelp_elite = '''
+                SELECT
+                    u.user_id,
+                    count(rest.review_id) as reviews_count,
+                    avg(rest.stars) as avg_rating
+                FROM {user} u
+                    JOIN (
+                        SELECT r.user_id as user_id, r.review_id, r.stars
+                        FROM {review} r
+                            JOIN {business} as b
+                                ON b.business_id = r.business_id
+                        WHERE REPEATED_CONTAINS(b.categories,'Restaurants')
+                        ) AS rest
+                    ON u.user_id = rest.user_id
+                WHERE u.elite[0] IS NOT NULL
+                GROUP BY u.user_id
+                LIMIT 10
+        '''.format(**cls.__tables)
+        return yelp_elite
+

@@ -57,6 +57,17 @@ class DataService:
 
         self.print_count(yelp_elite_review)
 
+    def get_yelp_restaurant_review(self):
+        query = self.__dictionary.get_restaurant_reviews()
+        yelp_restaurant_review = self.__drill.query(query, 30)
+
+        self.print_header("elite restaurant reviews")
+        print("user_id \t\t\t\t review_count \t\t avg_rating")
+        for result in yelp_restaurant_review:
+            print("%s \t %s \t\t\t\t\t %s" % (result['user_id'], result['reviews_count'], result['avg_rating']))
+
+        self.print_count(yelp_restaurant_review)
+
     @staticmethod
     def print_header(query_name):
         print('''
@@ -73,7 +84,8 @@ Printing %s:
         # self.get_yelp_elite()
         # self.get_yelp_elite_count()
         # self.get_yelp_elite_tip()
-        self.get_yelp_elite_review()
+        # self.get_yelp_elite_review()
+        self.get_yelp_restaurant_review()
 
 
 if __name__ == '__main__':
