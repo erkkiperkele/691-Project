@@ -1,7 +1,9 @@
 from pydrill.client import PyDrill
 
 from DAL import queryDictionary
-
+from pandas import DataFrame, Series
+import pandas as pd
+import numpy as np
 
 class DataService:
     __drill = None
@@ -22,51 +24,44 @@ class DataService:
 
     def get_yelp_elite(self):
         query = self.__dictionary.get_elite()
-        yelp_elite = self.__drill.query(query)
-
-        self.print_header("elite members")
-        for result in yelp_elite:
-            print("%s - %s" % (result['user_id'], result['elite']))
+        results = self.__drill.query(query)
+        self.print_frame(results, 10)
 
     def get_yelp_elite_count(self):
         query = self.__dictionary.get_elite_count()
-        yelp_elite = self.__drill.query(query)
-
-        for result in yelp_elite:
-            print("elite count: {0}".format(result['elite_count']))
+        results = self.__drill.query(query)
+        self.print_frame(results, 10)
 
     def get_yelp_elite_tip(self):
         query = self.__dictionary.get_elite_tip()
-        yelp_elite_tip = self.__drill.query(query)
-
-        self.print_header("elite extended members")
-        print("user_id \t\t\t\t tip_count")
-        for result in yelp_elite_tip:
-            print("%s \t %s" % (result['user_id'], result['tip_count']))
-
-        self.print_count(yelp_elite_tip)
+        results = self.__drill.query(query)
+        self.print_frame(results, 10)
 
     def get_yelp_elite_review(self):
         query = self.__dictionary.get_elite_review()
-        yelp_elite_review = self.__drill.query(query, 30)
-
-        self.print_header("elite extended members")
-        print("user_id \t\t\t\t review_count")
-        for result in yelp_elite_review:
-            print("%s \t %s" % (result['user_id'], result['review_count']))
-
-        self.print_count(yelp_elite_review)
+        results = self.__drill.query(query, 30)
+        self.print_frame(results, 10)
 
     def get_yelp_restaurant_review(self):
         query = self.__dictionary.get_restaurant_reviews()
-        yelp_restaurant_review = self.__drill.query(query, 30)
+        results = self.__drill.query(query, 30)
+        self.print_frame(results, 10)
 
-        self.print_header("elite restaurant reviews")
-        print("user_id \t\t\t\t review_count \t\t avg_rating")
-        for result in yelp_restaurant_review:
-            print("%s \t %s \t\t\t\t\t %s" % (result['user_id'], result['reviews_count'], result['avg_rating']))
+    def test(self):
+        query = self.__dictionary.get_elite_tip()
+        results = self.__drill.query(query, 30)
+        frame = DataFrame(data=results.rows, columns=results.columns)
+        print(frame['tip_count'].describe())
 
-        self.print_count(yelp_restaurant_review)
+    @staticmethod
+    def print_frame(results, records_to_display=None):
+        frame = DataFrame(data=results.rows, columns=results.columns)
+        print("\n")
+
+        if records_to_display is None:
+            print(frame.to_string(justify='left'))
+        else:
+            print(frame[:records_to_display].to_string(justify='left'))
 
     @staticmethod
     def print_header(query_name):
@@ -85,7 +80,8 @@ Printing %s:
         # self.get_yelp_elite_count()
         # self.get_yelp_elite_tip()
         # self.get_yelp_elite_review()
-        self.get_yelp_restaurant_review()
+        # self.get_yelp_restaurant_review()
+        self.test()
 
 
 if __name__ == '__main__':
