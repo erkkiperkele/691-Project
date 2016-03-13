@@ -19,15 +19,13 @@ class DataBuilder:
          • Months : Number of months for which user has been yelping"""
 
         # TODO: add votes and yelping since in month.
-        return self.__dataService.get_featureset1_but_votes(category)
+        featureset1 = self.__dataService.get_frame(self.__dataService.get_featureset1_but_votes(category))
+        return featureset1
 
     def test(self):
-        frame = self.__dataService.get_frame(self.build_feature_set_1())
+        frame = self.build_feature_set_1()
         print(frame.describe())
-        frame.to_json('/Users/Aymeric/Desktop/featureset1_but_votes.json')
-        df = pandas.read_json('/Users/Aymeric/Desktop/featureset1_but_votes.json')
-        print(df.describe())
-        print(df.to_string())
+        print(frame.to_string())
 
 
     def main(self):
