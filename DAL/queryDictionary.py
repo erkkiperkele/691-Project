@@ -8,28 +8,28 @@ class QueryDictionary:
     import os
 
     # # All
-    __dataPath = '''`dfs.root`.`''' + os.path.normpath('./Users/Aymeric/apache-drill-1.5.0/YelpDataSet/')
-    __suffixe = '''/yelp_academic_dataset'''
-    __tables = {
-        'user': __dataPath + __suffixe + '''_user.json`''',
-        'business': __dataPath + __suffixe + '''_business.json`''',
-        'checkin': __dataPath + __suffixe + '''_checkin.json`''',
-        'review': __dataPath + __suffixe + '''_review.json`''',
-        'tip': __dataPath + __suffixe + '''_tip.json`'''
-    }
-
-    # # Montréal
-    # __dataPath = '''`dfs.root`.`''' + os.path.abspath('./../montreal_subset/')
-    # __suffixe = '''/montreal'''
-    #
+    # __dataPath = '''`dfs.root`.`''' + os.path.normpath('./Users/Aymeric/apache-drill-1.5.0/YelpDataSet/')
+    # __suffixe = '''/yelp_academic_dataset'''
     # __tables = {
-    #     'user': __dataPath + __suffixe + '''_users_who_reviewed.json`''',
+    #     'user': __dataPath + __suffixe + '''_user.json`''',
     #     'business': __dataPath + __suffixe + '''_business.json`''',
     #     'checkin': __dataPath + __suffixe + '''_checkin.json`''',
-    #     'review': __dataPath + __suffixe + '''_reviews.json`''',
-    #     'tip': __dataPath + __suffixe + '''_tip.json`''',
-    #     'users_tip': __dataPath + __suffixe + '''_users_who_tipped.json`'''
+    #     'review': __dataPath + __suffixe + '''_review.json`''',
+    #     'tip': __dataPath + __suffixe + '''_tip.json`'''
     # }
+
+    # # Montréal
+    __dataPath = '''`dfs.root`.`''' + os.path.abspath('./../montreal_subset/')
+    __suffixe = '''/montreal'''
+
+    __tables = {
+        'user': __dataPath + __suffixe + '''_users_who_reviewed.json`''',
+        'business': __dataPath + __suffixe + '''_business.json`''',
+        'checkin': __dataPath + __suffixe + '''_checkin.json`''',
+        'review': __dataPath + __suffixe + '''_reviews.json`''',
+        'tip': __dataPath + __suffixe + '''_tip.json`''',
+        'users_tip': __dataPath + __suffixe + '''_users_who_tipped.json`'''
+    }
 
     @classmethod
     def get_users(cls):
@@ -105,7 +105,7 @@ class QueryDictionary:
         return yelp_elite
 
     @classmethod
-    def get_restaurant_reviews2(cls, category='Restaurants'):
+    def get_featureset1_but_votes(cls, category='Restaurants'):
         arg = {'category': category}
         cls.__tables.update(**arg)
         yelp_elite = '''

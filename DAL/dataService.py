@@ -56,16 +56,10 @@ class DataService:
         results = self.__drill.query(query, 30)
         return results
 
-    def get_users_with_reviews(self, categories='Restaurant'):
-        query = self.__dictionary.get_restaurant_reviews2()
-        results = self.__drill.query(query, 30)
-        return results
-
-    def test(self):
-        query = self.__dictionary.get_elite_tip()
+    def get_featureset1_but_votes(self, category='Restaurant'):
+        query = self.__dictionary.get_featureset1_but_votes(category)
         results = self.__drill.query(query, 300)
-        frame = DataFrame(data=results.rows, columns=results.columns)
-        print(frame['tip_count'].describe())
+        return results
 
     @staticmethod
     def get_frame(results, number_of_records=None):
@@ -74,24 +68,12 @@ class DataService:
     @staticmethod
     def print_frame(results, records_to_display=None):
         frame = DataService.get_frame(results, records_to_display)
-        # frame = DataFrame(data=results.rows, columns=results.columns)
         print("\n")
 
         if records_to_display is None:
             print(frame.to_string(justify='right'))
         else:
             print(frame[:records_to_display].to_string(justify='left'))
-
-    @staticmethod
-    def print_header(query_name):
-        print('''
------------------------
-Printing %s:
------------------------''' % query_name)
-
-    @staticmethod
-    def print_count(records):
-        print("Number of records: {0}".format(len(records.rows)))
 
     def main(self):
         self.print_frame(self.get_elite_users(), 10)
@@ -100,7 +82,6 @@ Printing %s:
         self.print_frame(self.get_elite_users_review(), 10)
         self.print_frame(self.get_restaurant_review(), 10)
         self.print_frame(self.get_elite_users(), 10)
-        # self.test()
 
 
 if __name__ == '__main__':
