@@ -4,15 +4,39 @@ class QueryDictionary:
     :__dataPath: the root folder for the yelp dataset json files
     :__tables: a dictionary of named arguments for each json file (table) to be passed to the queries
     """
-    __dataPath = '''`dfs.root`.`./Users/Aymeric/apache-drill-1.5.0/YelpDataSet/'''
 
+    import os
+
+    # # All
+    __dataPath = '''`dfs.root`.`''' + os.path.normpath('./Users/Aymeric/apache-drill-1.5.0/YelpDataSet/')
+    __suffixe = '''/yelp_academic_dataset'''
     __tables = {
-        'user': __dataPath + '''yelp_academic_dataset_user.json`''',
-        'business': __dataPath + '''yelp_academic_dataset_business.json`''',
-        'checkin': __dataPath + '''yelp_academic_dataset_checkin.json`''',
-        'review': __dataPath + '''yelp_academic_dataset_review.json`''',
-        'tip': __dataPath + '''yelp_academic_dataset_tip.json`'''
+        'user': __dataPath + __suffixe + '''_user.json`''',
+        'business': __dataPath + __suffixe + '''_business.json`''',
+        'checkin': __dataPath + __suffixe + '''_checkin.json`''',
+        'review': __dataPath + __suffixe + '''_review.json`''',
+        'tip': __dataPath + __suffixe + '''_tip.json`'''
     }
+
+    # # Montréal
+    # __dataPath = '''`dfs.root`.`''' + os.path.abspath('./../montreal_subset/')
+    # __suffixe = '''/montreal'''
+    #
+    # __tables = {
+    #     'user': __dataPath + __suffixe + '''_users_who_reviewed.json`''',
+    #     'business': __dataPath + __suffixe + '''_business.json`''',
+    #     'checkin': __dataPath + __suffixe + '''_checkin.json`''',
+    #     'review': __dataPath + __suffixe + '''_reviews.json`''',
+    #     'tip': __dataPath + __suffixe + '''_tip.json`''',
+    #     'users_tip': __dataPath + __suffixe + '''_users_who_tipped.json`'''
+    # }
+
+    @classmethod
+    def get_users(cls):
+        users = '''
+                 SELECT * FROM {user}
+        '''.format(**cls.__tables)
+        return users
 
     @classmethod
     def get_elite(cls):
@@ -78,5 +102,42 @@ class QueryDictionary:
                 GROUP BY u.user_id
                 LIMIT 10
         '''.format(**cls.__tables)
+        return yelp_elite
+
+    @classmethod
+    def get_restaurant_reviews2(cls, category='Restaurants'):
+        arg = {'category': category}
+        cls.__tables.update(**arg)
+        yelp_elite = '''
+SELECT
+    u.user_id,
+    all_reviews.total_reviews,
+    rest.categories_reviews,
+    rest.avg_rating AS categories_avg_rating,
+    rest.std_rating AS std_dev_rating,
+    rest.biz_count AS categories_biz_count
+FROM {user} u
+    JOIN (
+        SELECT rev.user_id, COUNT(*) as total_reviews
+        FROM {review} rev
+        GROUP BY rev.user_id
+        ) AS all_reviews
+    ON u.user_id = all_reviews.user_id
+    JOIN (
+        SELECT
+            r.user_id AS user_id,
+            COUNT(r.review_id) AS categories_reviews,
+            AVG(r.stars) AS avg_rating,
+            STDDEV_POP(r.stars) AS std_rating,
+            COUNT(r.business_id) AS biz_count
+        FROM {review} r
+            JOIN {business} as b
+                ON b.business_id = r.business_id
+        WHERE REPEATED_CONTAINS(b.categories, 'Restaurants')
+        GROUP BY r.user_id
+        ) AS rest
+    ON u.user_id = rest.user_id
+
+        '''.format(arg, **cls.__tables)
         return yelp_elite
 
