@@ -18,7 +18,7 @@ class QueryDictionary:
     #     'tip': __dataPath + __suffixe + '''_tip.json`'''
     # }
 
-    # # Montréal
+    # # Montreal
     __dataPath = '''`dfs.root`.`''' + os.path.abspath('./../montreal_subset/')
     __suffixe = '''/montreal'''
 
