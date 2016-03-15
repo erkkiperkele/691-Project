@@ -56,8 +56,8 @@ class DataService:
         results = self.__drill.query(query, 30)
         return results
 
-    def get_featureset1_but_votes(self, category='Restaurant'):
-        query = self.__dictionary.get_featureset1_but_votes(category)
+    def get_featureset1_but_votes(self):
+        query = self.__dictionary.get_featureset1_but_votes()
         results = self.__drill.query(query, 300)
         return results
 
@@ -76,12 +76,14 @@ class DataService:
             print(frame[:records_to_display].to_string(justify='left'))
 
     def main(self):
-        self.print_frame(self.get_elite_users(), 10)
-        self.print_frame(self.get_elite_users_count(), 10)
-        self.print_frame(self.get_elite_users_tip(), 10)
-        self.print_frame(self.get_elite_users_review(), 10)
-        self.print_frame(self.get_restaurant_review(), 10)
-        self.print_frame(self.get_elite_users(), 10)
+        #self.print_frame(self.get_elite_users(), 10)
+        #self.print_frame(self.get_elite_users_count(), 10)
+        #self.print_frame(self.get_elite_users_tip(), 10)
+        #self.print_frame(self.get_elite_users_review(), 10)
+        #self.print_frame(self.get_restaurant_review(), 10)
+        #self.print_frame(self.get_elite_users(), 10)
+        #self.print_frame(self.get_featureset1_but_votes(), 10)
+        self.get_frame(self.get_featureset1_but_votes()).to_json('../full_dataset/featureset1_resto_food_chinese.json')
 
 
 if __name__ == '__main__':

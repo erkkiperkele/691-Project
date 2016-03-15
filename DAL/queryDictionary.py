@@ -19,16 +19,16 @@ class QueryDictionary:
     # }
 
     # # Montreal
-    __dataPath = '''`dfs.root`.`''' + os.path.abspath('./../montreal_subset/')
-    __suffixe = '''/montreal'''
+    __dataPath = '''`dfs.root`.`''' + os.path.abspath('./../../yelp_dataset_challenge_academic_dataset/')
+    __suffixe = '''/yelp_academic_dataset'''
 
     __tables = {
-        'user': __dataPath + __suffixe + '''_users_who_reviewed.json`''',
+        'user': __dataPath + __suffixe + '''_user.json`''',
         'business': __dataPath + __suffixe + '''_business.json`''',
         'checkin': __dataPath + __suffixe + '''_checkin.json`''',
-        'review': __dataPath + __suffixe + '''_reviews.json`''',
-        'tip': __dataPath + __suffixe + '''_tip.json`''',
-        'users_tip': __dataPath + __suffixe + '''_users_who_tipped.json`'''
+        'review': __dataPath + __suffixe + '''_review.json`''',
+        'tip': __dataPath + __suffixe + '''_tip.json`'''
+        #'users_tip': __dataPath + __suffixe + '''_users_who_tipped.json`'''
     }
 
     @classmethod
@@ -105,9 +105,8 @@ class QueryDictionary:
         return yelp_elite
 
     @classmethod
-    def get_featureset1_but_votes(cls, category='Restaurants'):
-        arg = {'category': category}
-        cls.__tables.update(**arg)
+    def get_featureset1_but_votes(cls):
+        #cls.__tables.update(**arg)
         yelp_elite = '''
 SELECT
     u.user_id,
@@ -133,11 +132,16 @@ FROM {user} u
         FROM {review} r
             JOIN {business} as b
                 ON b.business_id = r.business_id
-        WHERE REPEATED_CONTAINS(b.categories, 'Restaurants')
+        WHERE 
+            ( REPEATED_CONTAINS(b.categories, 'Restaurant')
+            OR
+            REPEATED_CONTAINS(b.categories, 'Food') ) 
+            AND
+            REPEATED_CONTAINS(b.categories, 'Chinese')
         GROUP BY r.user_id
         ) AS rest
     ON u.user_id = rest.user_id
 
-        '''.format(arg, **cls.__tables)
+        '''.format(**cls.__tables)
         return yelp_elite
 
