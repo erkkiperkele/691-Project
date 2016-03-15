@@ -1,6 +1,6 @@
 from pydrill.client import PyDrill
 
-from DAL import queryDictionary
+import queryDictionary
 from pandas import DataFrame, Series
 import pandas as pd
 import numpy as np
