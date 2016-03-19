@@ -28,7 +28,7 @@ class QueryDictionary:
         'checkin': __dataPath + __suffixe + '''_checkin.json`''',
         'review': __dataPath + __suffixe + '''_review.json`''',
         'tip': __dataPath + __suffixe + '''_tip.json`'''
-        #'users_tip': __dataPath + __suffixe + '''_users_who_tipped.json`'''
+        # 'users_tip': __dataPath + __suffixe + '''_users_who_tipped.json`'''
     }
 
     @classmethod
@@ -57,7 +57,6 @@ class QueryDictionary:
 
     @classmethod
     def get_elite_tip(cls):
-
         yelp_elite = '''
                 SELECT u.user_id, count(*) as tip_count  FROM {user} u
                    JOIN {tip} as t
@@ -70,7 +69,6 @@ class QueryDictionary:
 
     @classmethod
     def get_elite_review(cls):
-
         yelp_elite = '''
                 SELECT u.user_id, count(*) as review_count FROM {user} u
                    JOIN {review} as r
@@ -82,7 +80,9 @@ class QueryDictionary:
         return yelp_elite
 
     @classmethod
-    def get_restaurant_reviews(cls):
+    def get_reviews(cls, category='Restaurants'):
+        arg = {'category': category}
+        cls.__tables.update(**arg)
 
         yelp_elite = '''
                 SELECT
@@ -95,7 +95,7 @@ class QueryDictionary:
                         FROM {review} r
                             JOIN {business} as b
                                 ON b.business_id = r.business_id
-                        WHERE REPEATED_CONTAINS(b.categories,'Restaurants')
+                        WHERE REPEATED_CONTAINS(b.categories,'{category}')
                         ) AS rest
                     ON u.user_id = rest.user_id
                 WHERE u.elite[0] IS NOT NULL
@@ -106,7 +106,7 @@ class QueryDictionary:
 
     @classmethod
     def get_featureset1_but_votes(cls):
-        #cls.__tables.update(**arg)
+        # cls.__tables.update(**arg)
         yelp_elite = '''
 SELECT
     u.user_id,
@@ -145,3 +145,45 @@ FROM {user} u
         '''.format(**cls.__tables)
         return yelp_elite
 
+    @classmethod
+    def get_user_review(cls, review_id):
+        arg = {'review_id': review_id}
+        cls.__tables.update(**arg)
+        query = '''
+SELECT
+    u.user_id,
+    all_reviews.total_reviews,
+    rest.categories_reviews,
+    rest.avg_rating AS categories_avg_rating,
+    rest.std_rating AS std_dev_rating,
+    rest.biz_count AS categories_biz_count
+FROM {user} u
+    JOIN (
+        SELECT rev.user_id, COUNT(*) as total_reviews
+        FROM {review} rev
+        GROUP BY rev.user_id
+        ) AS all_reviews
+    ON u.user_id = all_reviews.user_id
+    JOIN (
+        SELECT
+            r.user_id AS user_id,
+            COUNT(r.review_id) AS categories_reviews,
+            AVG(r.stars) AS avg_rating,
+            STDDEV_POP(r.stars) AS std_rating,
+            COUNT(r.business_id) AS biz_count
+        FROM {review} r
+            JOIN {business} as b
+                ON b.business_id = r.business_id
+        WHERE
+            ( REPEATED_CONTAINS(b.categories, 'Restaurant')
+            OR
+            REPEATED_CONTAINS(b.categories, 'Food') )
+            AND
+            REPEATED_CONTAINS(b.categories, 'Chinese')
+        GROUP BY r.user_id
+        ) AS rest
+    ON u.user_id = rest.user_id
+
+        '''.format(**cls.__tables)
+
+        return query

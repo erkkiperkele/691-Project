@@ -61,6 +61,11 @@ class DataService:
         results = self.__drill.query(query, 300)
         return results
 
+    def get_user_review(self, review_id):
+        query = self.__dictionary.get_user_review(review_id)
+        results = self.__drill.query(query, 30)
+        return results
+
     @staticmethod
     def get_frame(results, number_of_records=None):
         return DataFrame(data=results.rows, columns=results.columns)
