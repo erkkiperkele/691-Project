@@ -1,6 +1,7 @@
 from DAL.dataService import DataService
 
 ### In progress. Not tested (that is, not working)
+### Not used. Using graph functionality instead.
 class BFS:
     '''
         Bi-directional search:

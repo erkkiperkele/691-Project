@@ -1,3 +1,4 @@
+import datetime
 import time
 from pydrill.client import PyDrill
 
@@ -70,8 +71,9 @@ class DataService:
     def review_dates(self):
         query = self.__dictionary.review_dates()
         t0 = time.clock();
-        results = self.__drill.query(query, 500)
-        print('Processing time: ' + time.clock() - t0)
+        print('started on: ' + str(datetime.datetime.now()))
+        results = self.__drill.query(query, 600)
+        print('finished on: ' + str(datetime.datetime.now()))
         return results
 
     @staticmethod
@@ -94,8 +96,8 @@ class DataService:
         #self.print_frame(self.get_elite_users_tip(), 10)
         #self.print_frame(self.get_elite_users_review(), 10)
         frame = self.get_frame(self.review_dates())
-        print(frame[:2])
-        frame.to_json('/Users/Aymeric/Desktop/review_by_review.json')
+        # print(frame[:2])
+        # frame.to_json('/Users/Aymeric/Desktop/review_by_review.json')
 
         #self.print_frame(self.get_elite_users(), 10)
         #self.print_frame(self.get_featureset1_but_votes(), 10)
