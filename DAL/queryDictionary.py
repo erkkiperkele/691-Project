@@ -7,29 +7,29 @@ class QueryDictionary:
 
     import os
 
-    # # All
-    # __dataPath = '''`dfs.root`.`''' + os.path.normpath('./Users/Aymeric/apache-drill-1.5.0/YelpDataSet/')
-    # __suffixe = '''/yelp_academic_dataset'''
-    # __tables = {
-    #     'user': __dataPath + __suffixe + '''_user.json`''',
-    #     'business': __dataPath + __suffixe + '''_business.json`''',
-    #     'checkin': __dataPath + __suffixe + '''_checkin.json`''',
-    #     'review': __dataPath + __suffixe + '''_review.json`''',
-    #     'tip': __dataPath + __suffixe + '''_tip.json`'''
-    # }
-
-    # # Montreal
-    __dataPath = '''`dfs.root`.`''' + os.path.abspath('./../../yelp_dataset_challenge_academic_dataset/')
+    # All
+    __dataPath = '''`dfs.root`.`''' + os.path.normpath('./Users/Aymeric/apache-drill-1.5.0/YelpDataSet/')
     __suffixe = '''/yelp_academic_dataset'''
-
     __tables = {
         'user': __dataPath + __suffixe + '''_user.json`''',
         'business': __dataPath + __suffixe + '''_business.json`''',
         'checkin': __dataPath + __suffixe + '''_checkin.json`''',
         'review': __dataPath + __suffixe + '''_review.json`''',
         'tip': __dataPath + __suffixe + '''_tip.json`'''
-        # 'users_tip': __dataPath + __suffixe + '''_users_who_tipped.json`'''
     }
+
+    # # Montreal
+    __dataPath = '''`dfs.root`.`''' + os.path.abspath('./../../yelp_dataset_challenge_academic_dataset/')
+    __suffixe = '''/yelp_academic_dataset'''
+
+    # __tables = {
+    #     'user': __dataPath + __suffixe + '''_user.json`''',
+    #     'business': __dataPath + __suffixe + '''_business.json`''',
+    #     'checkin': __dataPath + __suffixe + '''_checkin.json`''',
+    #     'review': __dataPath + __suffixe + '''_review.json`''',
+    #     'tip': __dataPath + __suffixe + '''_tip.json`'''
+    #     # 'users_tip': __dataPath + __suffixe + '''_users_who_tipped.json`'''
+    # }
 
     @classmethod
     def get_users(cls):
@@ -80,7 +80,17 @@ class QueryDictionary:
         return yelp_elite
 
     @classmethod
-    def get_reviews(cls, category='Restaurants'):
+    def get_review(cls, category='Restaurants'):
+        arg = {'category': category}
+        cls.__tables.update(**arg)
+        yelp_elite = '''
+                SELECT * from {review}
+                WHERE REPEATED_CONTAINS(categories,'{category}')
+        '''.format(**cls.__tables)
+        return yelp_elite
+
+    @classmethod
+    def get_reviews2(cls, category='Restaurants'):
         arg = {'category': category}
         cls.__tables.update(**arg)
 
@@ -98,9 +108,7 @@ class QueryDictionary:
                         WHERE REPEATED_CONTAINS(b.categories,'{category}')
                         ) AS rest
                     ON u.user_id = rest.user_id
-                WHERE u.elite[0] IS NOT NULL
                 GROUP BY u.user_id
-                LIMIT 10
         '''.format(**cls.__tables)
         return yelp_elite
 
@@ -184,6 +192,89 @@ FROM {user} u
         ) AS rest
     ON u.user_id = rest.user_id
 
+        '''.format(**cls.__tables)
+
+        return query
+
+    @classmethod
+    def square_reviews(cls):
+        query = '''
+SELECT COUNT(*) FROM
+(
+    SELECT r.review_id, b.business_id from {review} r
+        JOIN {business} as b
+            ON b.business_id = r.business_id
+        JOIN  {user} u
+            ON u.user_id = r.user_id
+    WHERE u.elite[0] IS NOT NULL
+    AND (
+            REPEATED_CONTAINS(b.categories,'Restaurants')
+            OR
+            REPEATED_CONTAINS(b.categories,'Food')
+    )
+    AND REPEATED_CONTAINS(b.categories,'Chinese')
+) as r1
+
+JOIN
+(
+    SELECT r.review_id, b.business_id from {review} r
+        JOIN {business} as b
+            ON b.business_id = r.business_id
+    WHERE (
+            REPEATED_CONTAINS(b.categories,'Restaurants')
+            OR
+            REPEATED_CONTAINS(b.categories,'Food')
+    )
+    AND REPEATED_CONTAINS(b.categories,'Chinese')
+) as r2
+ON r1.business_id = r2.business_id
+        '''.format(**cls.__tables)
+
+        return query
+
+    @classmethod
+    def review_dates(cls):
+        query = '''
+SELECT
+    r1.review_id as reference_id,
+    r1.`date` as reference_date,
+    r1.stars as authority_stars,
+    r1.user_id as authority_id,
+    r2.review_id as review_id,
+    r2.`date` as review_date,
+    r2.user_id as user_id,
+    CONCAT(r1.user_id, r2.user_id) as validation_token
+FROM
+(
+    SELECT r.review_id, r.user_id, r.stars, r.friends, r.`date`, b.business_id as elite_business_id from {review} r
+        JOIN {business} as b
+            ON b.business_id = r.business_id
+        JOIN  {user} u
+            ON u.user_id = r.user_id
+    WHERE u.elite[0] IS NOT NULL
+    AND (
+            REPEATED_CONTAINS(b.categories,'Restaurants')
+            OR
+            REPEATED_CONTAINS(b.categories,'Food')
+    )
+    AND REPEATED_CONTAINS(b.categories,'Chinese')
+) as r1
+
+JOIN
+(
+    SELECT r.review_id, r.user_id, r.friends, r.`date`, b.business_id from {review} r
+        JOIN {business} as b
+            ON b.business_id = r.business_id
+        JOIN  {user} u
+            ON u.user_id = r.user_id
+    WHERE (
+            REPEATED_CONTAINS(b.categories,'Restaurants')
+            OR
+            REPEATED_CONTAINS(b.categories,'Food')
+    )
+    AND REPEATED_CONTAINS(b.categories,'Chinese')
+) as r2
+ON r1.elite_business_id = r2.business_id
         '''.format(**cls.__tables)
 
         return query

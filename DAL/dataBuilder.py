@@ -23,12 +23,12 @@ class DataBuilder:
         return featureset1
 
     def test(self):
-        # frame = self.build_feature_set_1()
+        frame = self.build_feature_set_1()
         # frame.to_json()
         # pandas.read_json()
-        frame = pandas.read_json('../montreal_subset/featureset1.json')
-        print(frame.describe())
-        print(frame[:10].to_string())
+        # frame = pandas.read_json('../montreal_subset/featureset1.json')
+        # print(frame.describe())
+        # print(frame[:10].to_string())
 
 
     def main(self):

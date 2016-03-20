@@ -1,6 +1,6 @@
 from DAL.dataService import DataService
 
-### In progress. Not tested.
+### In progress. Not tested (that is, not working)
 class BFS:
     '''
         Bi-directional search:

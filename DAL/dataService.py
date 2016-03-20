@@ -1,3 +1,4 @@
+import time
 from pydrill.client import PyDrill
 
 import queryDictionary
@@ -52,7 +53,7 @@ class DataService:
         return results
 
     def get_restaurant_review(self):
-        query = self.__dictionary.get_restaurant_reviews()
+        query = self.__dictionary.get_review()
         results = self.__drill.query(query, 30)
         return results
 
@@ -64,6 +65,13 @@ class DataService:
     def get_user_review(self, review_id):
         query = self.__dictionary.get_user_review(review_id)
         results = self.__drill.query(query, 30)
+        return results
+
+    def review_dates(self):
+        query = self.__dictionary.review_dates()
+        t0 = time.clock();
+        results = self.__drill.query(query, 500)
+        print('Processing time: ' + time.clock() - t0)
         return results
 
     @staticmethod
@@ -85,10 +93,13 @@ class DataService:
         #self.print_frame(self.get_elite_users_count(), 10)
         #self.print_frame(self.get_elite_users_tip(), 10)
         #self.print_frame(self.get_elite_users_review(), 10)
-        #self.print_frame(self.get_restaurant_review(), 10)
+        frame = self.get_frame(self.review_dates())
+        print(frame[:2])
+        frame.to_json('/Users/Aymeric/Desktop/review_by_review.json')
+
         #self.print_frame(self.get_elite_users(), 10)
         #self.print_frame(self.get_featureset1_but_votes(), 10)
-        self.get_frame(self.get_featureset1_but_votes()).to_json('../full_dataset/featureset1_resto_food_chinese.json')
+        # self.get_frame(self.get_featureset1_but_votes()).to_json('../full_dataset/featureset1_resto_food_chinese.json')
 
 
 if __name__ == '__main__':
