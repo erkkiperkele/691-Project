@@ -74,7 +74,7 @@ class DataService:
         print('started on: ' + str(datetime.datetime.now()))
         results = self.__drill.query(query, 600)
         print('finished on: ' + str(datetime.datetime.now()))
-        return results
+        return self.get_frame(results)
 
     @staticmethod
     def get_frame(results, number_of_records=None):
@@ -96,7 +96,7 @@ class DataService:
         #self.print_frame(self.get_elite_users_tip(), 10)
         #self.print_frame(self.get_elite_users_review(), 10)
         frame = self.get_frame(self.review_dates())
-        # print(frame[:2])
+        print(frame[:2])
         # frame.to_json('/Users/Aymeric/Desktop/review_by_review.json')
 
         #self.print_frame(self.get_elite_users(), 10)
