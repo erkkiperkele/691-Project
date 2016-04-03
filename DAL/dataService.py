@@ -31,42 +31,42 @@ class DataService:
     def get_users(self):
         query = self.__dictionary.get_users()
         results = self.__drill.query(query)
-        return results
+        return self.get_frame(results)
 
     def get_elite_users(self):
         query = self.__dictionary.get_elite()
         results = self.__drill.query(query)
-        return results
+        return self.get_frame(results)
 
     def get_elite_users_count(self):
         query = self.__dictionary.get_elite_count()
         results = self.__drill.query(query)
-        return results
+        return self.get_frame(results)
 
     def get_elite_users_tip(self):
         query = self.__dictionary.get_elite_tip()
         results = self.__drill.query(query)
-        return results
+        return self.get_frame(results)
 
     def get_elite_users_review(self):
         query = self.__dictionary.get_elite_review()
         results = self.__drill.query(query, 30)
-        return results
+        return self.get_frame(results)
 
     def get_restaurant_review(self):
         query = self.__dictionary.get_review()
         results = self.__drill.query(query, 30)
-        return results
+        return self.get_frame(results)
 
     def get_featureset1_but_votes(self):
         query = self.__dictionary.get_featureset1_but_votes()
         results = self.__drill.query(query, 300)
-        return results
+        return self.get_frame(results)
 
     def get_user_review(self, review_id):
         query = self.__dictionary.get_user_review(review_id)
         results = self.__drill.query(query, 30)
-        return results
+        return self.get_frame(results)
 
     def review_dates(self):
         query = self.__dictionary.review_dates()
@@ -81,8 +81,8 @@ class DataService:
         return DataFrame(data=results.rows, columns=results.columns)
 
     @staticmethod
-    def print_frame(results, records_to_display=None):
-        frame = DataService.get_frame(results, records_to_display)
+    def print_frame(frame, records_to_display=None):
+        # frame = DataService.get_frame(results, records_to_display)
         print("\n")
 
         if records_to_display is None:
@@ -91,12 +91,13 @@ class DataService:
             print(frame[:records_to_display].to_string(justify='left'))
 
     def main(self):
-        #self.print_frame(self.get_elite_users(), 10)
+        self.print_frame(self.get_elite_users(), 10)
         #self.print_frame(self.get_elite_users_count(), 10)
         #self.print_frame(self.get_elite_users_tip(), 10)
         #self.print_frame(self.get_elite_users_review(), 10)
-        frame = self.get_frame(self.review_dates())
-        print(frame[:2])
+        # frame = self.get_frame(self.review_dates())
+        # print(frame[:2])
+
         # frame.to_json('/Users/Aymeric/Desktop/review_by_review.json')
 
         #self.print_frame(self.get_elite_users(), 10)
