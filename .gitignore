@@ -1,3 +1,5 @@
 .ipynb_checkpoints/
 full_dataset/usergraph_vt_resto_food_chinese.json
 full_dataset/user.json
+DAL/__pycache__/dataService.cpython-35.pyc
+DAL/__pycache__/queryDictionary.cpython-35.pyc
